@@ -7,7 +7,7 @@ This repository is a coding exam for Joshua that can upload and import excel, In
 Clone the repository 
 
 ```bash
-git clone https://github.com/Damnval/media_trust.git
+git clone https://github.com/Damnval/brassrabit.git
 ```
 
 ## Install dependencies
