@@ -28,12 +28,13 @@ class ContactController extends Controller
         
         try {
 
-            $this->contactService->storeTemplate($request);
+            $contacts = $this->contactService->storeTemplate($request);
 
             $this->data['results']['message'] = "Contacts Succesfully saved.";
+            $this->data['results']['contacts'] = $contacts;
             $this->data['status'] = 200;
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
 
             $this->data['error'] = $e->getMessage();
             DB::rollBack();

@@ -34,9 +34,9 @@
   <thead>
     <tr>
       <th scope="col">#</th>
+      <th scope="col">Email</th>
       <th scope="col">Subject</th>
       <th scope="col">Message</th>
-      <th scope="col">Email</th>
     </tr>
     </thead>
     <tbody>

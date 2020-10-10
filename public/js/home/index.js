@@ -1,3 +1,4 @@
+// initialize angular app
 var app = angular.module('multipleInputs',[]);
 
 app.directive('ngFiles', ['$parse', function ($parse) {
@@ -16,72 +17,117 @@ app.directive('ngFiles', ['$parse', function ($parse) {
 
 app.controller('multipleInputsCtrl',function($scope, $http) {
 
+  // set default values on fields
   $scope.user = {
     contacts: [
-      {}
+      {
+        subject: 'Hello, {{ first_name }} {{ last_name }}!',
+        message: 'Is {{ company }} the name of your Company, Mr./Mrs. {{ last_name }}?',
+      },
+      {
+        subject: 'Hello, {{ first_name }}!',
+        message: 'Do you think this would be useful for {{ company }}?',
+      },
+      {
+        subject: 'Hi, {{ first_name }}!',
+        message: 'What is your {{ email }} and {{ gender }} please?',
+      },
+      {
+        subject: 'Hi, {{ first_name }}!',
+        message: 'Can you tell me your {{ gender }}?',
+      }
     ],
-    templates: [
-      {
-        email: 'dancing@bettwe.com',
-        subject: 'test Subject',
-        message: 'Test Message',
-      },
-      {
-        email: 'val@yahoo.com',
-        subject: 'Test MEssag 1 Subject',
-        message: 'Test Message',
-      },
-      {
-        email: 'val@gmail.com',
-        subject: 'test Subject',
-        message: 'Test ',
-      },
-    ]
+    templates: []
   }
 
+  // Use formdata on submission for excel
   var formdata = new FormData();
-   
+  
+  /**
+   * Will add new contact in contacts array
+   * 
+   * @returns void
+   */
   $scope.addContact = function() {
     var newContact = {};
     $scope.user.contacts.push(newContact);
   }
    
-   $scope.removeContact = function(contact) {
-      var index = $scope.user.contacts.indexOf(contact);
-      $scope.user.contacts.splice(index,1);
-   }
+  /**
+   * Will remove the selected index in contacts array
+   * 
+   * @returns void
+   */
+  $scope.removeContact = function(contact) {
+    var index = $scope.user.contacts.indexOf(contact);
+    $scope.user.contacts.splice(index,1);
+  }
 
+  /**
+   * Appends the file in formdata on selection file
+   * 
+   * @returns void
+   */
   $scope.getTheFiles = function ($files) {
-    console.log($files)
+
       angular.forEach($files, function (value, key) {
-          formdata.append('csv', value);
+          formdata.append('excel_file', value);
       });
   };
 
-  // NOW UPLOAD THE FILES.
+ /**
+   * Upload or sending the file and data to API
+   * 
+   * @returns void
+   */
   $scope.uploadFiles = function () {
 
-  for ( var key in $scope.user ) {
-    formdata.append(key, JSON.stringify($scope.user[key]));
+    // simple validation of file if it is setted
+    if(!document.getElementById('file').files[0]){
+      return;
+    }
+
+    // converts array of field to formdata
+    for ( var key in $scope.user ) {
+      formdata.append(key, JSON.stringify($scope.user[key]));
+    }
+
+    var req = {
+      method: 'POST',
+      url: '/api/generate-templates',
+      headers: {
+        'Content-Type': undefined
+      },
+      data: formdata
+    }
+
+    // Http request to send data to backEnd or API
+    $http(req).then(function(res) {
+
+        $scope.user.templates = res.data.results.contacts
+        $scope.alertMessage( res.data.results.message, 'success');
+
+      }, function(err){
+        var err_message = err.data.error;
+        $scope.alertMessage(err_message, 'error');
+
+      });
   }
 
-  var req = {
-    method: 'POST',
-    url: '/api/generate-templates',
-    headers: {
-      'Content-Type': undefined
-    },
-    data: formdata
+  /**
+   * Dynamic that alerts a message 
+   * 
+   * @param string message 
+   * @param string type 
+   */
+  $scope.alertMessage= function(message, type){ 	 									
+    Swal.fire({
+        position: 'center',
+        icon: type,
+        title: message,
+        showConfirmButton: false,
+        timer: 1500
+    })
   }
-
-  $http(req).then(function(success) {
-      console.log(success)
-      console.log('success')
-    }, function(err){
-      console.log(err)
-      console.log('failed')
-    });
-  }
-
 
 });
