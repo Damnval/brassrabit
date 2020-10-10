@@ -39,3 +39,9 @@ To boost framework speed run and get .env variables to config
 php artisan config:cache
 ```
 
+## Other Quest
+
+1. Made the UI attractive
+2. Sends actual email using Mailtrap.io
+2. Create automated tests (To do)
+
