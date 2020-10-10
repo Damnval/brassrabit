@@ -2,15 +2,15 @@
 @section('content')
 
 {{-- <form  action="/action_page.php"> --}}
-<form>
-  <label for="exampleFormControlFile1">Import Contacts</label>
-  <input type="file" class="form-control-file" id="exampleFormControlFile1">
+<form name="ContactForm">
+  <label for="file">Import Contacts</label>
+  <input type="file" id="file" name="file" ng-files="getTheFiles($files)"/>
 
   <div class="pt-3 pb-3">
     <button ng-click="addContact()" class="btn btn-primary">Add Template</button> 
   </div>
 
-  <section ng-repeat="contact in contacts">
+  <section ng-repeat="contact in user.contacts">
     <span class="serial-number">@{{ $index + 1 }}.</span>
   
     <div class="form-group">
@@ -25,7 +25,7 @@
   </section>
 
   <div class="pull-right">
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" ng-click="uploadFiles()" class="btn btn-primary">Submit</button>
   </div>
 
 </form>
@@ -40,23 +40,11 @@
     </tr>
     </thead>
     <tbody>
-      <tr>
+      <tr ng-repeat="template in user.templates">
         <th scope="row">1</th>
-        <td>Mark</td>
-        <td>Otto</td>
-        <td>@mdo</td>
-      </tr>
-      <tr>
-        <th scope="row">2</th>
-        <td>Jacob</td>
-        <td>Thornton</td>
-        <td>@fat</td>
-      </tr>
-      <tr>
-      <th scope="row">3</th>
-        <td>Larry</td>
-        <td>the Bird</td>
-        <td>@twitter</td>
+        <td> @{{ template.email }} </td>
+        <td> @{{ template.subject }} </td>
+        <td> @{{ template.message }} </td>
       </tr>
   </tbody>
 </table>
