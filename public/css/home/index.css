@@ -1,0 +1,21 @@
+* {
+    box-sizing: border-box;
+}
+
+input, button {
+    outline: none;
+}
+
+.users-container-inputs-button {
+    padding: 6px;
+    color: red;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.serial-number {
+    font-size: 18px;
+    padding: 6px;
+    font-weight: bold;
+    color:grey;
+}
