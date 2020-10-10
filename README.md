@@ -16,7 +16,6 @@ Go to project folder and run
 
 ```bash
 composer install
-npm install && npm run dev
 ```
 
 ## Development Setup
