@@ -1,5 +1,5 @@
 // initialize angular app
-var app = angular.module('multipleInputs',[]);
+var app = angular.module('multipleInputs', ['ngFileUpload']);
 
 app.directive('ngFiles', ['$parse', function ($parse) {
 
@@ -15,11 +15,15 @@ app.directive('ngFiles', ['$parse', function ($parse) {
     }
 }]);
 
-app.controller('multipleInputsCtrl',function($scope, $http) {
+app.controller('multipleInputsCtrl',function($scope, $http, $window) {
 
   // set default values on fields
   $scope.user = {
     contacts: [
+      {
+        subject: 'Hi, {{ first_name }}!',
+        message: 'Can you tell me your {{ gender }}?',
+      },
       {
         subject: 'Hello, {{ first_name }} {{ last_name }}!',
         message: 'Is {{ company }} the name of your Company, Mr./Mrs. {{ last_name }}?',
@@ -27,18 +31,12 @@ app.controller('multipleInputsCtrl',function($scope, $http) {
       {
         subject: 'Hello, {{ first_name }}!',
         message: 'Do you think this would be useful for {{ company }}?',
-      },
-      {
-        subject: 'Hi, {{ first_name }}!',
-        message: 'What is your {{ email }} and {{ gender }} please?',
-      },
-      {
-        subject: 'Hi, {{ first_name }}!',
-        message: 'Can you tell me your {{ gender }}?',
       }
     ],
     templates: []
   }
+
+  $scope.interPolationVariables = [];
 
   // Use formdata on submission for excel
   var formdata = new FormData();
@@ -69,11 +67,75 @@ app.controller('multipleInputsCtrl',function($scope, $http) {
    * @returns void
    */
   $scope.getTheFiles = function ($files) {
+     
+    $scope.SelectedFile = $files;
+    formdata.append('excel_file', $files);
 
-      angular.forEach($files, function (value, key) {
-          formdata.append('excel_file', value);
-      });
+    //reads the excel file upon upload
+    var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.xls|.xlsx)$/;
+    if (regex.test($scope.SelectedFile.name.toLowerCase())) {
+        if (typeof (FileReader) != "undefined") {
+          var reader = new FileReader();
+          //For Browsers other than IE.
+          if (reader.readAsBinaryString) {
+            reader.onload = function (e) {
+              $scope.ProcessExcel(e.target.result);
+            };
+            reader.readAsBinaryString($scope.SelectedFile);
+          } else {
+              //For IE Browser.
+              reader.onload = function (e) {
+                var data = "";
+                var bytes = new Uint8Array(e.target.result);
+                for (var i = 0; i < bytes.byteLength; i++) {
+                  data += String.fromCharCode(bytes[i]);
+                }
+                $scope.ProcessExcel(data);
+              };
+              reader.readAsArrayBuffer($scope.SelectedFile);
+            }
+        } else {
+
+          $scope.alertMessage('This browser does not support HTML5.', 'error');
+        }
+    } else {     
+
+      $scope.alertMessage('Please upload a valid Excel file.', 'error');
+    }
   };
+   
+  /**
+   * Formats the excel and get the firstSheet only
+   * 
+   * @returns void
+   */
+  $scope.ProcessExcel = function (data) {
+    //Read the Excel File data.
+    var workbook = XLSX.read(data, {
+        type: 'binary'
+    });
+
+    var firstSheet = workbook.SheetNames[0];
+    //find the header the header
+    $scope.getHeader(workbook.Sheets[firstSheet])
+  };
+
+  
+  /**
+   * Getting the header in excel then display it in UI
+   * 
+   * @returns void
+   */
+  $scope.getHeader = function(ws){
+      const header = []
+      const columnCount = XLSX.utils.decode_range(ws['!ref']).e.c + 1;
+
+      for (let i = 0; i < columnCount; ++i) {
+        header[i] = ws[`${XLSX.utils.encode_col(i)}1`].v
+      }
+
+      $scope.interPolationVariables = header;
+  }
 
  /**
    * Upload or sending the file and data to API
@@ -81,7 +143,7 @@ app.controller('multipleInputsCtrl',function($scope, $http) {
    * @returns void
    */
   $scope.uploadFiles = function () {
-
+    
     // simple validation of file if it is setted
     if(!document.getElementById('file').files[0]){
       return;

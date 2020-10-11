@@ -60,7 +60,6 @@ class ContactsImport implements ToModel, WithHeadingRow
                 return $contact;
             }
                            
-     
         }
     }
 

@@ -4,10 +4,16 @@
 {{-- <form  action="/action_page.php"> --}}
 <form name="ContactForm">
   <label for="file">Import Contacts</label>
-  <input type="file" id="file" name="file" ng-files="getTheFiles($files)"/>
+  <input type="file" id="file" ngf-select="getTheFiles($file)" />
+
+  <div class="pt-2">
+    <span ng-repeat="variable in interPolationVariables" >
+      <button class="btn btn-secondary ">@{{ variable }} </button>
+    </span>
+  </div>
 
   <div class="pt-3 pb-3">
-    <button ng-click="addContact()" class="btn btn-primary">Add Template</button> 
+    <button ng-click="addContact()" class="btn btn-primary mr-2">Add Template</button> 
   </div>
 
   <section ng-repeat="contact in user.contacts">
@@ -48,7 +54,6 @@
       </tr>
   </tbody>
 </table>
-
 
 @stop
 
