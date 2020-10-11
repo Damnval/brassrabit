@@ -41,7 +41,13 @@ php artisan config:cache
 
 ## Other Quest
 
-1. Made the UI attractive
-2. Sends actual email using Mailtrap.io
-2. Create automated tests (To do)
+1. Provides the list of headers upon uploading file.
+2. Slightly made the UI attactive
+3. Automation - ??
+4. Enables to send email in mailtrap.io - U:val@gemango.com, P:Myseventhjob07
+5. None.
+
+## CSV sample for uploading
+
+public/csv/joshua_email.xlsx
 
