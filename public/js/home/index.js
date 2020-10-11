@@ -86,6 +86,8 @@ app.controller('multipleInputsCtrl',function($scope, $http) {
     if(!document.getElementById('file').files[0]){
       return;
     }
+    // show loading animation
+    swal.showLoading();
 
     // converts array of field to formdata
     for ( var key in $scope.user ) {
@@ -100,18 +102,30 @@ app.controller('multipleInputsCtrl',function($scope, $http) {
       },
       data: formdata
     }
-
+ 
     // Http request to send data to backEnd or API
-    $http(req).then(function(res) {
+    $http(req).then(
+        function(res) {
 
-        $scope.user.templates = res.data.results.contacts
-        $scope.alertMessage( res.data.results.message, 'success');
+          if(res.data.results){
+            $scope.user.templates = res.data.results.contacts
+          }
+          $scope.alertMessage( res.data.results.message, 'success');
 
-      }, function(err){
-        var err_message = err.data.error;
-        $scope.alertMessage(err_message, 'error');
+        }, 
+        function(err){
+          var err_message = err.data.error;
 
+          $scope.alertMessage(err_message, 'error');
+
+        }
+      ).finally(function() {
+        // close loading animation
+        setTimeout(function(){ 
+          swal.close()
+        }, 3000);
       });
+
   }
 
   /**

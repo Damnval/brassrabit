@@ -3,6 +3,8 @@
 namespace App\Imports;
 
 use App\Models\Contact;
+use App\Mail\SendContactTemplates;
+use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
@@ -33,7 +35,6 @@ class ContactsImport implements ToModel, WithHeadingRow
     public function model(array $row)
     {
         $contact_max_count = count($this->contacts) - 1;
-  
             foreach ($this->contacts as $key => $value) {
           
             $subject_pass = $this->checkMatchCount($value['subject'], $row);
@@ -46,12 +47,17 @@ class ContactsImport implements ToModel, WithHeadingRow
                 $subject_res = $this->interpolateVariables($row, $value['subject']);
                 $message_res =  $this->interpolateVariables($row, $value['message']);
 
-                // saves in contacts table
-                return new Contact([
+                $data = [
                     'email'  => $row['email'],
                     'subject' => $subject_res,
                     'message' => $message_res
-                ]);
+                ];
+
+                // saves in contacts table
+                $contact = new Contact($data);
+                //sends email using markdown
+                Mail::send(new SendContactTemplates($contact));
+                return $contact;
             }
                            
      
