@@ -82,4 +82,5 @@
 <link href="{{ asset('css/home/index.css') }}" rel="stylesheet">
 <!-- Scripts -->
 <script src="{{ asset('js/home/index.js')}}"></script>
+<script src="{{ asset('js/home/ngDraggable.js')}}"></script>
 @endpush
