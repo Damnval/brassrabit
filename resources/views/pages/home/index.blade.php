@@ -1,16 +1,34 @@
 @extends('layouts.default')
 @section('content')
 
-{{-- <form  action="/action_page.php"> --}}
 <form name="ContactForm">
   <label for="file">Import Contacts</label>
   <input type="file" id="file" ngf-select="getTheFiles($file)" />
 
-  <div class="pt-2">
-    <span ng-repeat="variable in interPolationVariables" >
-      <button class="btn btn-secondary ">@{{ variable }} </button>
-    </span>
-  </div>
+   <div class="row">
+      </div>
+      <div ng-drop="true" ng-drop-success="onDropCompleteRemove($data,$event)">
+        <br/>
+        Drag Rows:
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Variable Names</th>
+            </tr>
+          </thead> 
+          <tbody>
+            <tr ng-class="{grabbable: hover, grabbing:grab}" ng-mousedown="grab = true" ng-mouseup="grab = false" ng-mouseenter="hover = true" ng-mouseleave="hover = false" ng-repeat="obj in interPolationVariables" ng-drag="true" ng-drag-data="obj" data-allow-transform="true">
+              <td>
+                @{{$index+1}}
+              </td>
+              <td> 
+                @{{obj.variable}}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
   <div class="pt-3 pb-3">
     <button ng-click="addContact()" class="btn btn-primary mr-2">Add Template</button> 
@@ -18,15 +36,17 @@
 
   <section ng-repeat="contact in user.contacts">
     <span class="serial-number">@{{ $index + 1 }}.</span>
-  
+
     <div class="form-group">
       <label for="subject">Subject</label>
       <a class="pull-right users-container-inputs-button" ng-click="removeContact(contact)">X</a>
-      <input ng-model="contact.subject" type="text" class="form-control" id="subject">
+      <input ng-drop="true" ng-drop-success="onDropCompleteFirstQuarter($data, $event, $index, 'subject')" ng-model="contact.subject" type="text" class="form-control" id="subject">
     </div>
     <div class="form-group">
       <label for="message">Message</label>
-      <textarea  ng-model="contact.message" class="form-control" id="message" rows="3"></textarea>
+      <div ng-drop="true" ng-drop-success="onDropCompleteFirstQuarter($data, $event, $index, 'message')"  >
+        <textarea ng-model="contact.message" class="form-control" id="message" rows="3"></textarea>
+      </div>
     </div>
   </section>
 
